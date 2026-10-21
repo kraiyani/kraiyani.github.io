@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#101d32"/>
+  <path d="M850 0v630" stroke="#293b52"/>
+  <g fill="none" stroke="#79ddca" stroke-width="2"><circle cx="1030" cy="315" r="100"/><circle cx="1030" cy="315" r="55"/><path d="M930 315h200m-100-100v200"/></g>
+  <g fill="#79ddca"><circle cx="1030" cy="215" r="7"/><circle cx="930" cy="315" r="7"/><circle cx="1030" cy="415" r="7"/></g>
+  <g font-family="Segoe UI,Arial,sans-serif"><text x="72" y="108" fill="#79ddca" font-size="40" font-weight="700">kr.</text><text x="72" y="282" fill="#e1e9f6" font-size="70" font-weight="700" letter-spacing="-3">Kashyap Raiyani</text><text x="76" y="349" fill="#b3c0d4" font-size="32">Data science &amp; applied AI</text><text x="76" y="485" fill="#79ddca" font-size="23">Research mindset. Engineering practice.</text><text x="76" y="551" fill="#a4b3ca" font-size="22">kraiyani.github.io</text></g>
+</svg>

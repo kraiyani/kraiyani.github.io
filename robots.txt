@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://kraiyani.github.io/sitemap.xml

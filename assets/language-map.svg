@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="520" height="480" viewBox="0 0 520 480">
+  <rect width="520" height="480" rx="28" fill="#234ed8"/>
+  <g fill="none" stroke="#6c8bf0" stroke-width="1"><circle cx="269" cy="239" r="195"/><circle cx="269" cy="239" r="143"/><path d="M0 239h520M269 0v480"/></g>
+  <g fill="#ffffff" font-family="Segoe UI,Arial,sans-serif">
+    <text x="36" y="51" font-size="14" fill="#e5edff">A language classification sketch</text>
+    <text x="36" y="423" font-size="31" font-weight="600" letter-spacing="-1">From text to patterns.</text>
+    <text x="37" y="451" font-size="12" fill="#e5edff">Conceptual illustration / no model output</text>
+  </g>
+  <g stroke="#c6d5ff" stroke-width="2" fill="none"><path d="M104 151L254 223 408 135M110 311L254 223 411 303"/><path d="M254 223L280 346"/></g>
+  <g fill="#ffffff" stroke="#c6d5ff" stroke-width="1"><rect x="32" y="118" width="142" height="65" rx="14"/><rect x="334" y="103" width="149" height="65" rx="14"/><rect x="32" y="279" width="153" height="65" rx="14"/><rect x="346" y="270" width="140" height="65" rx="14"/></g>
+  <g fill="#234ed8" font-family="Segoe UI,Arial,sans-serif" text-anchor="middle" font-size="20" font-weight="600"><text x="103" y="159">Text</text><text x="408" y="144">Language</text><text x="109" y="319">Patterns</text><text x="416" y="311">Classes</text></g>
+  <circle cx="254" cy="223" r="46" fill="#152c82" stroke="#ffffff" stroke-width="2"/>
+  <g fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round"><path d="M233 209h25m-25 14h43m-43 14h34"/></g>
+  <circle cx="280" cy="346" r="8" fill="#b6cbff"/>
+</svg>

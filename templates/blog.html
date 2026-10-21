@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark light">
+  <meta name="description" content="{{DESCRIPTION}}">
+  <meta property="og:type" content="{{OG_TYPE}}">
+  <meta property="og:title" content="{{TITLE}}">
+  <meta property="og:description" content="{{DESCRIPTION}}">
+  <meta property="og:url" content="{{URL}}">
+  <meta property="og:image" content="https://kraiyani.github.io/assets/social-card.png">
+  <link rel="canonical" href="{{URL}}">
+  <link rel="alternate" type="application/rss+xml" title="Kashyap Raiyani — Writing" href="/feed.xml">
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/assets/styles.css">
+  <script src="/assets/main.js" defer></script>
+  <title>{{TITLE}}</title>
+  {{SCHEMA}}
+</head>
+<body class="writing-page">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="writing-toolbar">
+    <a class="monogram" href="/" aria-label="Kashyap Raiyani, home">kr<span>.</span></a>
+    <nav aria-label="Main navigation"><a href="/">Portfolio</a><a href="/blog/" aria-current="{{WRITING_CURRENT}}">Writing</a><a href="/feed.xml">RSS</a></nav>
+    <button class="theme-toggle" type="button" aria-label="Dark theme" aria-pressed="true" hidden>◐ Dark theme</button>
+  </header>
+  <main id="main" class="writing-main" tabindex="-1">
+    {{BODY}}
+  </main>
+  <footer class="writing-footer site-footer"><p>Kashyap Raiyani · Data science &amp; applied AI</p><p><a href="/">Portfolio</a> · <a href="/feed.xml">RSS feed</a> · <a href="https://github.com/kraiyani">GitHub</a></p></footer>
+</body>
+</html>
