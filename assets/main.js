@@ -34,25 +34,6 @@
     printButton.hidden = false;
     printButton.addEventListener('click', () => window.print());
   }
-  const stages = {
-    text: 'Text starts the task: a post, sentence or document becomes the input.',
-    language: 'Language provides context: multilingual tasks must account for different vocabularies and scripts.',
-    patterns: 'Patterns are representations learned or constructed from text to support the classification task.',
-    classes: 'Classes are the defined output categories. Their usefulness depends on the task and its evaluation.',
-  };
-  const stageButtons = [...document.querySelectorAll('[data-stage]')];
-  const languageDetail = document.querySelector('#language-detail');
-  if (languageDetail) {
-    function selectStage(button) {
-      stageButtons.forEach(candidate => candidate.setAttribute('aria-pressed', String(candidate === button)));
-      languageDetail.textContent = stages[button.dataset.stage];
-    }
-    stageButtons.forEach(button => {
-      button.disabled = false;
-      button.addEventListener('click', () => selectStage(button));
-      button.addEventListener('focus', () => selectStage(button));
-    });
-  }
   const links = [...document.querySelectorAll('.section-nav a')];
   const sections = links.map(link => document.querySelector(link.hash));
   if (sections.length) {

@@ -28,6 +28,8 @@ user-site domain; preview those through the server rather than a file URL.
 - `assets/main.js`: optional theme persistence, current-section navigation
   and printing. Content remains readable without JavaScript.
 - `assets/language-map.svg`: conceptual illustration from the supplied site.
+- `assets/sentinel-2-input.jpg`: sample input quicklook from the classifier
+  repository, credited as Copernicus Sentinel data (2018).
 - `assets/social-card.svg`: editable source for the social-preview PNG.
 - `404.html`, `.nojekyll`, `robots.txt`, `sitemap.xml`: static hosting support.
 - `SOURCES.md`: content provenance and design references.
@@ -65,7 +67,7 @@ The browser script resolves the `playwright` module normally. If it is
 installed outside this repository, set `PLAYWRIGHT_MODULE` to its module
 directory. No dependency installation is needed to view or host the site.
 Checks cover local links, keyboard access, section tracking, themes and
-blocked storage, motion preferences, graphic interaction, writing pages,
+blocked storage, motion preferences, research walkthrough navigation, writing pages,
 RSS, narrow layouts, enlarged text, no-JavaScript content, résumé printing
 and the error page. Screenshots and a print PDF are saved
 under ignored `output/playwright/`.

@@ -50,17 +50,19 @@
         <p>At <strong>EXUS</strong>, I develop machine learning and applied AI capabilities for the EXUS Financial Suite, alongside technical delivery and collaboration with clients, product teams and engineers.</p>
         <p>Before that, I worked on European research projects at <strong>UNINOVA</strong> and the <strong>University of Évora</strong>. My PhD explored uncertainty prediction for active learning in earth observation: how to make better use of limited labelled data.</p>
         <div class="practice-strip" aria-label="Areas of practice"><span>Applied ML</span><span>NLP &amp; language</span><span>Research to software</span></div>
-        <figure class="language-explorer" aria-labelledby="language-title">
-          <figcaption id="language-title">A thread through the language projects</figcaption>
-          <ol class="language-path">
-            <li><button type="button" data-stage="text" aria-pressed="true" disabled>Text</button></li>
-            <li><button type="button" data-stage="language" aria-pressed="false" disabled>Language</button></li>
-            <li><button type="button" data-stage="patterns" aria-pressed="false" disabled>Patterns</button></li>
-            <li><button type="button" data-stage="classes" aria-pressed="false" disabled>Classes</button></li>
+        <aside class="research-feature" aria-labelledby="research-feature-title">
+          <div class="research-feature-intro">
+            <img src="assets/sentinel-2-input.jpg" width="512" height="512" loading="lazy" alt="Sentinel-2 input preview showing a coastline and surrounding land; this is not a classification result.">
+            <div><p class="project-context">Inside a real project</p><h3 id="research-feature-title">From 13 bands to six scene classes</h3><p>A look inside my Sentinel-2 research: what the code does, what the paper measured, and what still needs checking.</p></div>
+          </div>
+          <ol class="research-flow">
+            <li><strong>Align the bands</strong><span>Put 13 measurements on a common 20 m grid.</span></li>
+            <li><strong>Classify each pixel</strong><span>Water, shadow, cirrus, cloud, snow or other.</span></li>
+            <li><strong>Check the neighbours</strong><span>Apply a local majority rule to the class map.</span></li>
           </ol>
-          <p id="language-detail" aria-live="polite">Text starts the task: a post, sentence or document becomes the input.</p>
-          <p class="diagram-note">Conceptual illustration, without model output.</p>
-        </figure>
+          <div class="research-feature-links"><a class="text-link" href="/blog/sentinel-2-scene-classification/">Read the Sentinel-2 walkthrough</a><a href="https://github.com/kraiyani/Sentinel_2_image_scene_classifier">Explore the code</a></div>
+          <p class="research-image-credit">Input preview contains Copernicus Sentinel data (2018).</p>
+        </aside>
       </section>
       <section id="experience" class="content-section" aria-labelledby="experience-title">
         <div class="section-heading"><h2 id="experience-title">Experience</h2><span>A path through research &amp; delivery</span></div>

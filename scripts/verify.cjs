@@ -7,7 +7,7 @@ const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
 
 const root = path.resolve(__dirname, '..');
 const output = path.join(root, 'output/playwright');
-const types = { '.css': 'text/css', '.html': 'text/html', '.js': 'text/javascript', '.png': 'image/png', '.svg': 'image/svg+xml', '.xml': 'application/xml' };
+const types = { '.css': 'text/css', '.html': 'text/html', '.jpg': 'image/jpeg', '.js': 'text/javascript', '.png': 'image/png', '.svg': 'image/svg+xml', '.xml': 'application/xml' };
 const server = http.createServer((request, response) => {
   const pathname = new URL(request.url, 'http://localhost').pathname;
   const filename = path.resolve(root, `.${decodeURIComponent(pathname.endsWith('/') ? `${pathname}index.html` : pathname)}`);
@@ -37,9 +37,10 @@ const server = http.createServer((request, response) => {
     assert.equal(await page.evaluate(() => document.activeElement.textContent), 'Skip to content');
     await page.keyboard.press('Enter');
     assert.equal(await page.evaluate(() => document.activeElement.id), 'main');
-    await page.getByRole('button', { name: 'Patterns', exact: true }).click();
-    assert.equal(await page.getByRole('button', { name: 'Patterns', exact: true }).getAttribute('aria-pressed'), 'true');
-    assert((await page.locator('#language-detail').textContent()).includes('representations'));
+    await page.getByRole('link', { name: 'Read the Sentinel-2 walkthrough', exact: true }).click();
+    assert.equal(new URL(page.url()).pathname, '/blog/sentinel-2-scene-classification/');
+    assert(await page.getByRole('heading', { level: 1 }).textContent().then(text => text.includes('Sentinel-2')));
+    await page.goto(origin);
     assert.equal(await page.locator('.profile-intro').evaluate(element => getComputedStyle(element).animationName), 'none', 'Reduced motion must disable the entrance');
     const theme = page.getByRole('button', { name: 'Dark theme', exact: true });
     await theme.click();
@@ -148,6 +149,7 @@ const server = http.createServer((request, response) => {
     const plainContext = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 375, height: 900 } });
     const plain = await plainContext.newPage();
     await plain.goto(origin);
+    assert(await plain.getByRole('link', { name: 'Read the Sentinel-2 walkthrough', exact: true }).isVisible());
     assert.equal(await plain.locator('#projects article').count(), 3);
     assert(await plain.getByRole('link', { name: 'View full résumé', exact: true }).isVisible());
     assert(!(await plain.getByRole('button', { name: 'Dark theme', exact: true }).isVisible()));
@@ -170,7 +172,7 @@ const server = http.createServer((request, response) => {
     await blocked.getByRole('button', { name: 'Dark theme', exact: true }).click();
     assert.equal(await blocked.locator('html').getAttribute('data-theme'), 'light');
     assert.deepEqual(errors, []);
-    console.log('PASS: portfolio and writing links, RSS, graphic interaction, reduced motion, project hover/focus, keyboard navigation, themes, responsive layouts, enlarged text, no JavaScript, résumé print and 404');
+    console.log('PASS: research walkthrough navigation, portfolio and writing links, RSS, reduced motion, project hover/focus, keyboard navigation, themes, responsive layouts, enlarged text, no JavaScript, résumé print and 404');
   } finally {
     if (browser) await browser.close();
     await new Promise(resolve => server.close(resolve));

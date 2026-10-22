@@ -5,6 +5,11 @@ customer-level leakage article includes an executed synthetic experiment;
 the other two are documentation-based explanations. No employer data is
 included and no Jev/Laya benchmark is claimed.
 
+The Sentinel-2 walkthrough was added on 22 October 2026 from the published
+paper and the two local code repositories. It reports historical published
+scores and small synthetic helper checks separately; no full-scene
+classification or benchmark rerun is claimed.
+
 ## Sources and generated files
 
 Edit these sources:

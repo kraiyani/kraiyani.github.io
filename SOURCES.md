@@ -24,8 +24,9 @@ Prepared from the supplied local material on 21 October 2026.
 - No formal line-management scope, sole authorship, competition ranking
   or measured business improvement is inferred.
 - Project descriptions retain the scope in the supplied 21 October site
-  archive. Repository code and model results have not been executed or
-  independently validated in this implementation.
+  archive, with the Sentinel-2 feature grounded in a later source inspection.
+  Executed checks and results are described separately below; a project
+  summary does not imply a full reproduction of its original experiments.
 - Publication titles and venues follow the supplied CV. No live citation
   metrics or publication-count claims are included.
 - Illustrations are conceptual graphics, not software screenshots or
@@ -60,3 +61,22 @@ questions are explained separately. Raw and feature data are synthetic.
 Introductory motion and interaction effects respect reduced-motion
 preferences. The implementation follows the intent of
 [W3C's animation guidance](https://www.w3.org/WAI/WCAG22/Understanding/animation-from-interactions.html).
+
+## Sentinel-2 walkthrough added on 22 October 2026
+
+The article and homepage research feature trace `classifier.py`,
+`index_calculator.py`, `postprocessor.py`, and the historical
+`L1C_to_six_class_creator.py` in the owner's two Sentinel-2 repositories.
+The modular classifier's index-appending path is disabled; the older script
+actively appends 15 indices. The distinction is retained in the article.
+
+Historical benchmark figures are attributed to Raiyani et al. (2021),
+[DOI 10.3390/rs13020300](https://doi.org/10.3390/rs13020300), checked against
+the [University of Évora full text](https://dspace.uevora.pt/rdpc/bitstream/10174/31995/1/remotesensing-13-00300-v2.pdf).
+They are not a fresh benchmark on the local checkout. Only numerical
+helpers and neighbourhood voting are exercised on small synthetic arrays.
+
+`assets/sentinel-2-input.jpg` is an unchanged copy of the classifier
+repository's 2018 sample L1C quicklook. It contains Copernicus Sentinel data
+(2018), shows input imagery, and is explicitly not labelled as model output.
+No new classification map, speed claim or accuracy improvement is inferred.
