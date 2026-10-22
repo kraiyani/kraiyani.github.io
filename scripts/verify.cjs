@@ -74,7 +74,24 @@ const server = http.createServer((request, response) => {
     await listingPage.close();
     const homepageRoutes = await page.locator('#writing .writing-entry h3 a').evaluateAll(links => links.map(link => new URL(link.href).pathname));
     assert.deepEqual(homepageRoutes, blogRoutes.slice(0, 3), 'Homepage must show only the latest three articles');
-    for (const route of ['/', '/resume.html', '/404.html', '/blog/', ...blogRoutes]) {
+    const featuredRoutes = await page.locator('#projects .project h3 a').evaluateAll(links => links.map(link => new URL(link.href).pathname));
+    assert.equal(featuredRoutes.length, 3);
+    await page.getByRole('link', { name: 'Explore all case studies', exact: true }).click();
+    assert.equal(new URL(page.url()).pathname, '/projects/');
+    assert.equal(await page.getByRole('navigation', { name: 'Main navigation' }).getByRole('link', { name: 'Projects', exact: true }).getAttribute('aria-current'), 'page');
+    assert.equal(await page.getByRole('navigation', { name: 'Main navigation' }).getByRole('link', { name: 'Writing', exact: true }).getAttribute('aria-current'), 'false');
+    const projectRoutes = await page.locator('.project h3 a').evaluateAll(links => links.map(link => new URL(link.href).pathname));
+    assert.deepEqual(featuredRoutes, projectRoutes.slice(0, 3));
+    assert.equal(projectRoutes.length, 4);
+    await page.locator('.project h3 a').first().click();
+    assert.equal(new URL(page.url()).pathname, featuredRoutes[0]);
+    await page.getByRole('link', { name: 'Read the technical article', exact: true }).click();
+    assert.equal(new URL(page.url()).pathname, '/blog/preventing-data-leakage-customer-level-ml/');
+    await page.getByRole('navigation', { name: 'Main navigation' }).getByRole('link', { name: 'Contact', exact: true }).click();
+    assert.equal(new URL(page.url()).hash, '#contact');
+    assert.equal(await page.getByRole('link', { name: 'Connect on LinkedIn' }).getAttribute('href'), 'https://www.linkedin.com/in/kashyap-raiyani/');
+    assert.equal(await page.locator('.publications h4 a').count(), 4);
+    for (const route of ['/', '/resume.html', '/404.html', '/blog/', '/projects/', ...projectRoutes, ...blogRoutes]) {
       await page.goto(origin + route);
       assert.equal(await page.locator('h1').count(), 1);
       assert(!(await page.locator('body').textContent()).includes('[EDIT:'), 'No unfinished template content');
@@ -94,6 +111,12 @@ const server = http.createServer((request, response) => {
       for (const width of [320, 375, 768, 1024, 1440]) {
         await page.setViewportSize({ width, height: 900 });
         assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `Overflow: ${route} at ${width}`);
+        assert(await page.locator('.case-study td').evaluateAll(cells => cells.every(cell => {
+          if (!/^\d+(?:\.\d+)?$/.test(cell.textContent.trim())) return true;
+          const range = document.createRange();
+          range.selectNodeContents(cell);
+          return range.getClientRects().length === 1;
+        })), `Numeric result wraps across lines: ${route} at ${width}`);
       }
       await page.setViewportSize({ width: 375, height: 900 });
       await page.addStyleTag({ content: 'html { font-size: 200% !important; }' });
@@ -103,8 +126,10 @@ const server = http.createServer((request, response) => {
       assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `Overflow with enlarged text: ${route}: ${JSON.stringify(overflowing)}`);
     }
     await page.goto(origin);
-    await page.locator('.project-image img').scrollIntoViewIfNeeded();
-    await page.locator('.project-image img').evaluate(image => image.decode());
+    for (const picture of await page.locator('.project-image img').all()) {
+      await picture.scrollIntoViewIfNeeded();
+      await picture.evaluate(image => image.decode());
+    }
     await page.evaluate(() => window.scrollTo(0, 0));
     await page.screenshot({ path: path.join(output, 'mobile.png'), fullPage: true });
     const sampleRoute = blogRoutes.find(route => route === '/blog/preventing-data-leakage-customer-level-ml/') || blogRoutes.find(route => route === '/blog/jev-system-one/') || blogRoutes[0] || '/blog/';
@@ -117,6 +142,22 @@ const server = http.createServer((request, response) => {
     await page.screenshot({ path: path.join(output, 'article-mobile.png'), fullPage: true });
     await page.setViewportSize({ width: 1440, height: 1000 });
     await page.screenshot({ path: path.join(output, 'article-desktop.png'), fullPage: true });
+    await page.goto(origin + '/projects/');
+    for (const picture of await page.locator('.project-cover img').all()) {
+      await picture.scrollIntoViewIfNeeded();
+      await picture.evaluate(element => element.decode());
+    }
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await page.screenshot({ path: path.join(output, 'projects-desktop.png'), fullPage: true });
+    await page.goto(origin + projectRoutes[0]);
+    for (const picture of await page.locator('.article-body img').all()) {
+      await picture.scrollIntoViewIfNeeded();
+      await picture.evaluate(element => element.decode());
+    }
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await page.screenshot({ path: path.join(output, 'case-study-desktop.png'), fullPage: true });
+    await page.setViewportSize({ width: 375, height: 900 });
+    await page.screenshot({ path: path.join(output, 'case-study-mobile.png'), fullPage: true });
     await page.goto(origin + '/blog/');
     assert.equal(await page.locator('.writing-entry').count(), blogRoutes.length);
     if (blogRoutes.length) {
@@ -155,6 +196,8 @@ const server = http.createServer((request, response) => {
     assert(!(await plain.getByRole('button', { name: 'Dark theme', exact: true }).isVisible()));
     await plain.goto(origin + '/blog/');
     assert.equal(await plain.locator('.writing-entry').count(), blogRoutes.length, 'Writing must remain available without scripts');
+    await plain.goto(origin + '/projects/');
+    assert.equal(await plain.locator('.project').count(), projectRoutes.length, 'Projects must remain available without scripts');
     const motionContext = await browser.newContext({ reducedMotion: 'no-preference', viewport: { width: 1440, height: 1000 } });
     const motionPage = await motionContext.newPage();
     motionPage.on('pageerror', error => errors.push(error.message));
@@ -172,7 +215,7 @@ const server = http.createServer((request, response) => {
     await blocked.getByRole('button', { name: 'Dark theme', exact: true }).click();
     assert.equal(await blocked.locator('html').getAttribute('data-theme'), 'light');
     assert.deepEqual(errors, []);
-    console.log('PASS: research walkthrough navigation, portfolio and writing links, RSS, reduced motion, project hover/focus, keyboard navigation, themes, responsive layouts, enlarged text, no JavaScript, résumé print and 404');
+    console.log('PASS: case studies and article navigation, contact and publication links, research walkthrough, RSS, reduced motion, project hover/focus, keyboard navigation, themes, responsive layouts, enlarged text, no JavaScript, résumé print and 404');
   } finally {
     if (browser) await browser.close();
     await new Promise(resolve => server.close(resolve));

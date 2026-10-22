@@ -102,3 +102,25 @@ Each article links its project code, declared configuration, measured
 metrics and run provenance. Website charts and result snapshots are
 copied from generated project outputs. No EFS customer data, original PAN
 texts or demographic predictions are included in these demonstrations.
+
+## Portfolio case studies and public links added on 22 October 2026
+
+The four case studies in `content/projects/` summarise the corresponding
+articles and their existing result snapshots. They introduce no new model
+runs or performance claims. The homepage features customer validation,
+training-serving consistency and Sentinel-2 research; the project index
+also includes author-level validation. Original NLP repositories remain
+linked from the public résumé and GitHub archive.
+
+Publication links were matched to the publisher's title and DOI records:
+[Mahalanobis accuracy prediction](https://www.tandfonline.com/doi/abs/10.1080/01431161.2021.2013575),
+[active learning](https://link.springer.com/chapter/10.1007/978-3-031-04881-4_24),
+[Sentinel-2 classification](https://doi.org/10.3390/rs13020300) and
+[Portuguese event extraction](https://www.mdpi.com/2078-2489/10/6/205).
+The existing University of Évora paper link supplies open full text for
+the Sentinel-2 study.
+
+The contact route uses the public
+[Kashyap Raiyani / EXUS LinkedIn profile](https://pt.linkedin.com/in/kashyap-raiyani),
+matched by employer and research activity. No email address or phone
+number from private supporting material was added.

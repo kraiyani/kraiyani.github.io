@@ -22,6 +22,8 @@ user-site domain; preview those through the server rather than a file URL.
 - `index.html`: generated portfolio; edit `templates/home.html` instead.
 - `blog/`: generated writing index and individual article pages.
 - `content/posts/`: Markdown article sources.
+- `content/projects/`: Markdown case studies, with featured-project order.
+- `projects/`: generated project index and individual case-study pages.
 - `feed.xml`: generated RSS feed with summaries and full-article links.
 - `resume.html`: completed public résumé; use Print résumé to save a PDF.
 - `assets/styles.css`: responsive layout, theme tokens and print styles.
@@ -35,6 +37,7 @@ user-site domain; preview those through the server rather than a file URL.
 - `SOURCES.md`: content provenance and design references.
 - `scripts/verify.cjs`: browser smoke checks.
 - `scripts/build-blog.cjs`: dependency-free static Markdown publisher.
+- `templates/blog.html`: shared writing and case-study layout.
 - `BLOGGING.md`: authoring instructions and weekly editorial plan.
 
 Edit shared career details in `templates/home.html` and `resume.html`,
@@ -66,7 +69,7 @@ node scripts/verify.cjs
 The browser script resolves the `playwright` module normally. If it is
 installed outside this repository, set `PLAYWRIGHT_MODULE` to its module
 directory. No dependency installation is needed to view or host the site.
-Checks cover local links, keyboard access, section tracking, themes and
+Checks cover project-to-article navigation, local links, keyboard access, section tracking, themes and
 blocked storage, motion preferences, research walkthrough navigation, writing pages,
 RSS, narrow layouts, enlarged text, no-JavaScript content, résumé printing
 and the error page. Screenshots and a print PDF are saved

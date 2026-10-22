@@ -12,8 +12,9 @@ function fixture(t) {
     fs.rmSync(target, { recursive: true, force: true });
   });
   fs.mkdirSync(path.join(root, 'content/posts'), { recursive: true });
+  fs.mkdirSync(path.join(root, 'content/projects'), { recursive: true });
   fs.mkdirSync(path.join(root, 'templates'));
-  fs.writeFileSync(path.join(root, 'templates/home.html'), '<main>{{LATEST_POSTS}}</main>');
+  fs.writeFileSync(path.join(root, 'templates/home.html'), '<main>{{FEATURED_PROJECTS}}{{LATEST_POSTS}}</main>');
   fs.writeFileSync(path.join(root, 'templates/blog.html'), '<title>{{TITLE}}</title><meta name="description" content="{{DESCRIPTION}}"><link rel="canonical" href="{{URL}}">{{SCHEMA}}<main>{{BODY}}</main>');
   return root;
 }
@@ -122,4 +123,53 @@ test('renamed articles keep a redirect while feed and sitemap use only the canon
   assert(!fs.readFileSync(path.join(root, 'feed.xml'), 'utf8').includes('/old-slug/'));
   post(root, 'collision', { aliases: 'new-slug' });
   assert.throws(() => buildBlog(root, { today: '2026-10-21' }), /alias/i);
+});
+
+test('case studies have their own routes, ordered homepage features and no RSS entries', t => {
+  const root = fixture(t);
+  const { buildBlog } = require('./build-blog.cjs');
+  post(root, 'same-slug');
+  for (const [slug, extra] of [['same-slug', 'featured: 2'], ['first', 'featured: 1'], ['archive', ''], ['draft', 'status: draft'], ['future', 'date: 2026-10-28']]) {
+    const metadata = ['title: Study & evidence', 'date: 2026-10-21', 'status: published', 'topics: Model validation', 'summary: A measured experiment.'];
+    for (const line of extra ? [extra] : []) {
+      const key = line.split(':')[0];
+      const previous = metadata.findIndex(value => value.startsWith(key + ':'));
+      if (previous >= 0) metadata.splice(previous, 1);
+      metadata.push(line);
+    }
+    fs.writeFileSync(path.join(root, 'content/projects', `${slug}.md`), `---\n${metadata.join('\n')}\n---\n\n## Evidence\n\n![Synthetic comparison](/assets/comparison.png)\n\n[Article](/blog/same-slug/)\n`);
+  }
+  buildBlog(root, { today: '2026-10-21' });
+  const homepage = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+  assert(homepage.indexOf('/projects/first/') < homepage.indexOf('/projects/same-slug/'));
+  assert(!homepage.includes('/projects/archive/'));
+  const listing = fs.readFileSync(path.join(root, 'projects/index.html'), 'utf8');
+  assert(listing.includes('/projects/archive/') && !listing.includes('/projects/draft/') && !listing.includes('/projects/future/'));
+  assert(listing.includes('Study &amp; evidence'));
+  assert(listing.includes('alt="Synthetic comparison"'));
+  const study = fs.readFileSync(path.join(root, 'projects/same-slug/index.html'), 'utf8');
+  assert(study.includes('https://kraiyani.github.io/projects/same-slug/'));
+  assert(study.includes('id="evidence"') && study.includes('href="/blog/same-slug/"'));
+  assert(!study.includes('BlogPosting'));
+  assert(!fs.existsSync(path.join(root, 'projects/draft/index.html')));
+  assert(!fs.existsSync(path.join(root, 'projects/future/index.html')));
+  const sitemap = fs.readFileSync(path.join(root, 'sitemap.xml'), 'utf8');
+  assert(sitemap.includes('<loc>https://kraiyani.github.io/projects/</loc>'));
+  assert(sitemap.includes('/projects/archive/'));
+  assert(!fs.readFileSync(path.join(root, 'feed.xml'), 'utf8').includes('/projects/'));
+  assert.doesNotThrow(() => buildBlog(root, { today: '2026-10-21', check: true }));
+});
+
+test('case study feature ranks are validated before outputs change', t => {
+  const root = fixture(t);
+  const { buildBlog } = require('./build-blog.cjs');
+  const source = '---\ntitle: A study\ndate: 2026-10-21\nstatus: published\ntopics: ML\nsummary: A result.\nfeatured: 1\n---\n\n## Evidence\n\nSynthetic data.';
+  const first = path.join(root, 'content/projects/first.md');
+  fs.writeFileSync(first, source.replace('featured: 1', 'featured: -1'));
+  assert.throws(() => buildBlog(root, { today: '2026-10-21' }), /featured rank/i);
+  assert(!fs.existsSync(path.join(root, 'index.html')));
+  fs.writeFileSync(first, source);
+  fs.writeFileSync(path.join(root, 'content/projects/second.md'), source);
+  assert.throws(() => buildBlog(root, { today: '2026-10-21' }), /featured rank/i);
+  assert(!fs.existsSync(path.join(root, 'index.html')));
 });

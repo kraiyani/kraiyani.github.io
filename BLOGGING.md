@@ -20,7 +20,8 @@ performance or the historical PAN competition results.
 Edit these sources:
 
 - `content/posts/*.md`: article content and metadata.
-- `templates/blog.html`: shared writing-page layout.
+- `content/projects/*.md`: project case studies and homepage selection.
+- `templates/blog.html`: shared writing and case-study layout.
 - `templates/home.html`: portfolio source, including the writing section.
 - `templates/leakage-article.md`: expanded leakage article source; its
   measured results are filled by the companion experiment's exporter.
@@ -34,7 +35,8 @@ node scripts/build-blog.cjs --check
 ```
 
 The command writes `index.html`, `blog/index.html`, individual
-`blog/<slug>/index.html` pages, `feed.xml` and `sitemap.xml`. Do not edit
+`blog/<slug>/index.html` pages, `projects/index.html`, individual
+`projects/<slug>/index.html` pages, `feed.xml` and `sitemap.xml`. Do not edit
 those generated files directly. Retain generated files in Git so the
 existing static GitHub Pages setup can serve them without a build service.
 No dependencies are needed for the publisher or for viewing the site.
@@ -56,6 +58,28 @@ Filenames use lowercase letters, digits and hyphens. Set the five
 single-line metadata fields: title, date, status, topics and summary.
 Topics are comma-separated. Keep `status: draft` until the article has
 been reviewed, then use `published` and the actual publication date.
+
+## Add a case study
+
+Create `content/projects/a-descriptive-slug.md` using the same five required
+metadata fields as an article. The date records publication of the case
+study, rather than the date of any historical research it describes.
+Optional `featured: 1`, `featured: 2` or `featured: 3` selects and orders
+homepage projects; published feature ranks must be unique. Other published
+case studies remain available on the project index. Project aliases are
+not supported. Drafts and future dates follow the same publication filter
+as articles, and withdrawn generated case-study pages are removed.
+
+Use the existing Markdown subset described below. The first local image
+also supplies the card preview, with its alternative text. Cover the
+problem, your contribution, approach, evidence and limitations, and link
+to the code, detailed article and relevant result artifacts. Distinguish
+synthetic demonstrations from historical research and production work.
+
+Case studies appear in the sitemap, but stay out of the writing RSS feed.
+Run the same publisher command after updating either collection.
+
+## Markdown format
 
 The supported Markdown subset is intentionally small: paragraphs,
 `##` and `###` headings, unordered or numbered lists, fenced code blocks,

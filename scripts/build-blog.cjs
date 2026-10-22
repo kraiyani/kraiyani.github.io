@@ -94,25 +94,35 @@ function markdown(source) {
   return { body: blocks.join('\n'), contents };
 }
 
-function readPost(filename) {
+function readEntry(filename, collection) {
   const source = readText(filename);
   const match = source.match(/^---\n([\s\S]+?)\n---\n([\s\S]*)$/);
   if (!match) throw new Error(`Missing front matter: ${filename}`);
   const metadata = {};
+  const optional = collection === 'projects' ? ['featured'] : ['aliases'];
   for (const line of match[1].split('\n')) {
     const separator = line.indexOf(':');
     const key = line.slice(0, separator).trim();
-    if (separator < 0 || !['aliases', 'date', 'status', 'summary', 'title', 'topics'].includes(key) || metadata[key]) throw new Error(`Invalid metadata in ${filename}`);
+    if (separator < 0 || ![...optional, 'date', 'status', 'summary', 'title', 'topics'].includes(key) || metadata[key]) throw new Error(`Invalid metadata in ${filename}`);
     metadata[key] = line.slice(separator + 1).trim();
   }
   for (const key of ['date', 'status', 'summary', 'title', 'topics']) if (!metadata[key]) throw new Error(`Missing ${key}: ${filename}`);
   validateDate(metadata.date);
   if (!['draft', 'published'].includes(metadata.status)) throw new Error(`Invalid status: ${filename}`);
   const slug = path.basename(filename, '.md');
-  if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) throw new Error(`Invalid post filename: ${filename}`);
+  if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) throw new Error(`Invalid content filename: ${filename}`);
+  if (metadata.featured && !/^[1-3]$/.test(metadata.featured)) throw new Error(`Invalid featured rank: ${filename}`);
   const aliases = metadata.aliases ? metadata.aliases.split(',').map(value => value.trim()) : [];
   if (!aliases.every(alias => /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(alias))) throw new Error(`Invalid alias: ${filename}`);
   return { ...metadata, aliases, slug, topics: metadata.topics.split(',').map(value => value.trim()).filter(Boolean), source: match[2] };
+}
+
+function entries(root, collection, today) {
+  return fs.readdirSync(path.join(root, 'content', collection)).filter(name => name.endsWith('.md'))
+    .map(name => readEntry(path.join(root, 'content', collection, name), collection))
+    .filter(entry => entry.status === 'published' && entry.date <= today)
+    .sort((left, right) => right.date.localeCompare(left.date) || left.slug.localeCompare(right.slug))
+    .map(entry => ({ ...entry, ...markdown(entry.source), minutes: Math.max(1, Math.ceil(entry.source.split(/\s+/).filter(Boolean).length / 200)) }));
 }
 
 function displayDate(date) {
@@ -127,6 +137,15 @@ function cards(posts) {
 </article>`).join('\n');
 }
 
+function projectCards(projects) {
+  if (!projects.length) return '<p>No case studies yet. Check back for new work.</p>';
+  return projects.map(project => {
+    const cover = project.source.match(/^!\[([^\]]+)\]\((\/assets\/[^)]+)\)$/m);
+    const route = `/projects/${project.slug}/`;
+    return `<article class="project${cover ? '' : ' project-text'}">${cover ? `<a class="project-image project-cover" href="${route}" aria-label="${escape(project.title)} case study"><img src="${escape(cover[2])}" loading="lazy" alt="${escape(cover[1])}"></a>` : ''}<div><p class="project-context">Case study</p><h3><a href="${route}">${escape(project.title)} <span aria-hidden="true">↗</span></a></h3><p>${escape(project.summary)}</p><ul class="tags" aria-label="Project topics">${project.topics.map(topic => `<li>${escape(topic)}</li>`).join('')}</ul></div></article>`;
+  }).join('\n');
+}
+
 function fill(template, values) {
   return template.replace(/\{\{([A-Z_]+)\}\}/g, (_, key) => {
     if (!(key in values)) throw new Error(`Unknown template slot: ${key}`);
@@ -136,13 +155,10 @@ function fill(template, values) {
 
 function buildBlog(root, { today = new Date().toLocaleDateString('en-CA', { timeZone: 'Europe/London' }), check = false } = {}) {
   validateDate(today);
-  const posts = fs.readdirSync(path.join(root, 'content/posts')).filter(name => name.endsWith('.md')).map(name => readPost(path.join(root, 'content/posts', name)))
-    .filter(post => post.status === 'published' && post.date <= today)
-    .sort((left, right) => right.date.localeCompare(left.date) || left.slug.localeCompare(right.slug));
-  for (const post of posts) {
-    Object.assign(post, markdown(post.source));
-    post.minutes = Math.max(1, Math.ceil(post.source.split(/\s+/).filter(Boolean).length / 200));
-  }
+  const posts = entries(root, 'posts', today);
+  const projects = entries(root, 'projects', today);
+  const featured = projects.filter(project => project.featured).sort((left, right) => Number(left.featured) - Number(right.featured));
+  if (new Set(featured.map(project => project.featured)).size !== featured.length) throw new Error('Duplicate featured rank');
   const routeNames = new Set(posts.map(post => post.slug));
   for (const post of posts) {
     for (const alias of post.aliases) {
@@ -153,11 +169,19 @@ function buildBlog(root, { today = new Date().toLocaleDateString('en-CA', { time
   const pageTemplate = readText(path.join(root, 'templates/blog.html'));
   const homeTemplate = readText(path.join(root, 'templates/home.html'));
   const outputs = new Map();
-  outputs.set('index.html', generated + fill(homeTemplate, { LATEST_POSTS: cards(posts.slice(0, 3)) }));
+  outputs.set('index.html', generated + fill(homeTemplate, { FEATURED_PROJECTS: projectCards(featured), LATEST_POSTS: cards(posts.slice(0, 3)) }));
   const page = (title, description, route, body, schema = '') => generated + fill(pageTemplate, {
     TITLE: escape(title), DESCRIPTION: escape(description), URL: `${site}${route}`, BODY: body, SCHEMA: schema,
-    OG_TYPE: schema ? 'article' : 'website', WRITING_CURRENT: schema ? 'location' : 'page',
+    OG_TYPE: schema ? 'article' : 'website', WRITING_CURRENT: route.startsWith('/blog/') ? (schema ? 'location' : 'page') : 'false',
+    PROJECTS_CURRENT: route === '/projects/' ? 'page' : route.startsWith('/projects/') ? 'location' : 'false',
   });
+  outputs.set('projects/index.html', page('Projects | Kashyap Raiyani', 'Case studies in ML evaluation, reliable inference and earth observation, with code, evidence and limitations.', '/projects/',
+    `<header class="writing-heading"><p class="section-label">Projects</p><h1>From question to evidence.</h1><p>Selected research and engineering work. Each case study connects the problem, my contribution, the implementation and what the evidence supports.</p></header><section aria-label="Project case studies">${projectCards([...featured, ...projects.filter(project => !project.featured)])}</section>`));
+  for (const project of projects) {
+    const toc = project.contents.length ? `<nav class="article-contents" aria-label="Case study contents"><p>In this case study</p><ul>${project.contents.map(heading => `<li><a href="#${heading.id}">${escape(heading.title)}</a></li>`).join('')}</ul></nav>` : '';
+    const body = `<article class="case-study"><header class="article-heading"><a class="text-link" href="/projects/">← All projects</a><p class="article-meta">Project case study</p><h1>${escape(project.title)}</h1><p class="article-summary">${escape(project.summary)}</p><ul class="tags" aria-label="Topics">${project.topics.map(topic => `<li>${escape(topic)}</li>`).join('')}</ul></header>${toc}<div class="article-body">${project.body}</div><footer class="article-footer"><a class="text-link" href="/projects/">Explore all projects</a></footer></article>`;
+    outputs.set(`projects/${project.slug}/index.html`, page(`${project.title} | Kashyap Raiyani`, project.summary, `/projects/${project.slug}/`, body));
+  }
   outputs.set('blog/index.html', page('Writing | Kashyap Raiyani', 'Practical notes on applied machine learning, AI systems and research-led engineering.', '/blog/',
     `<header class="writing-heading"><p class="section-label">Writing</p><h1>Notes from the work.</h1><p>Questions, methods and engineering choices in machine learning and AI. Original explanations with sources and practical examples.</p><a class="text-link" href="/feed.xml">Subscribe via RSS</a></header><section aria-label="Articles">${cards(posts)}</section>`));
   for (const post of posts) {
@@ -171,14 +195,15 @@ function buildBlog(root, { today = new Date().toLocaleDateString('en-CA', { time
     }
   }
   outputs.set('feed.xml', `<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Kashyap Raiyani — Writing</title><link>${site}/blog/</link><description>Practical notes on ML, AI and engineering.</description><language>en-gb</language><atom:link href="${site}/feed.xml" rel="self" type="application/rss+xml"/>${posts.map(post => `<item><title>${escape(post.title)}</title><link>${site}/blog/${post.slug}/</link><guid isPermaLink="true">${site}/blog/${post.slug}/</guid><pubDate>${new Date(`${post.date}T12:00:00Z`).toUTCString()}</pubDate><description>${escape(post.summary)}</description></item>`).join('')}</channel></rss>\n`);
-  const routes = ['/', '/resume.html', '/blog/', ...posts.map(post => `/blog/${post.slug}/`)];
+  const routes = ['/', '/resume.html', '/projects/', ...projects.map(project => `/projects/${project.slug}/`), '/blog/', ...posts.map(post => `/blog/${post.slug}/`)];
   outputs.set('sitemap.xml', `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${routes.map(route => `<url><loc>${site}${route}</loc></url>`).join('')}</urlset>\n`);
   const stale = [];
-  const blogDirectory = path.join(root, 'blog');
-  if (fs.existsSync(blogDirectory)) {
-    for (const entry of fs.readdirSync(blogDirectory, { withFileTypes: true })) {
+  for (const collection of ['blog', 'projects']) {
+    const directory = path.join(root, collection);
+    if (!fs.existsSync(directory)) continue;
+    for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
       if (!entry.isDirectory() || !/^[a-z0-9-]+$/.test(entry.name)) continue;
-      const relative = `blog/${entry.name}/index.html`;
+      const relative = `${collection}/${entry.name}/index.html`;
       const filename = path.join(root, relative);
       if (!outputs.has(relative) && fs.existsSync(filename) && readText(filename).startsWith(generated)) stale.push(relative);
     }
@@ -206,7 +231,7 @@ if (require.main === module) {
     const options = { check: process.argv.includes('--check') };
     if (dateIndex >= 0) options.today = process.argv[dateIndex + 1];
     buildBlog(path.resolve(__dirname, '..'), options);
-    console.log(options.check ? 'PASS: generated blog files are current' : 'Built homepage, writing pages, RSS and sitemap');
+    console.log(options.check ? 'PASS: generated portfolio files are current' : 'Built homepage, project case studies, writing pages, RSS and sitemap');
   } catch (error) {
     console.error(error.message);
     process.exitCode = 1;
