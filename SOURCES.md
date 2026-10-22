@@ -80,3 +80,25 @@ helpers and neighbourhood voting are exercised on small synthetic arrays.
 repository's 2018 sample L1C quicklook. It contains Copernicus Sentinel data
 (2018), shows input imagery, and is explicitly not labelled as model output.
 No new classification map, speed claim or accuracy improvement is inferred.
+
+## Synthetic evaluation studies added on 22 October 2026
+
+The training-serving skew article is grounded in a source inspection of
+EFS's transformation, training and prediction paths. Its controlled
+experiment uses synthetic data to isolate inconsistent feature scaling
+on a paired holdout. The demonstration is separate from the legacy API,
+customer CSVs and stored model artifacts; it does not establish the
+performance impact on real EFS customers. Feature-selection contamination
+is identified as a separate concern rather than measured by this study.
+
+The author-level splitting article traces the English and Spanish PAN
+scripts and their author-to-tweet flattening. Its comparison uses fictional
+authors, invented text and fictional style labels. A random tweet split
+in that demonstration is not a reproduction of Keras's tail validation
+slice in the legacy scripts. Actual author overlap or contamination of
+the official PAN test set is not inferred from the source alone.
+
+Each article links its project code, declared configuration, measured
+metrics and run provenance. Website charts and result snapshots are
+copied from generated project outputs. No EFS customer data, original PAN
+texts or demographic predictions are included in these demonstrations.

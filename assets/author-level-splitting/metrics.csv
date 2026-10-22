@@ -1,0 +1,4 @@
+condition,train_post_count,test_post_count,train_author_count,test_author_count,overlap_author_count,test_a_post_count,test_b_post_count,post_accuracy,post_macro_f1,author_accuracy,author_macro_f1
+row,1200,400,80,80,80,200,200,1.0,1.0,1.0,1.0
+author_grouped,1200,400,60,20,0,200,200,0.68,0.6793506851374032,1.0,1.0
+row_marker_ablation,1200,400,80,80,80,200,200,0.6825,0.6824980156125975,0.7625,0.762462884825754

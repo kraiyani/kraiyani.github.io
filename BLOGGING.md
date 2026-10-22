@@ -10,6 +10,11 @@ paper and the two local code repositories. It reports historical published
 scores and small synthetic helper checks separately; no full-scene
 classification or benchmark rerun is claimed.
 
+The training-serving skew and author-level validation articles were also
+prepared on 22 October 2026. Their demonstrations use entirely synthetic
+data and report executed results. They do not reproduce EFS customer-data
+performance or the historical PAN competition results.
+
 ## Sources and generated files
 
 Edit these sources:
@@ -81,6 +86,29 @@ The publisher generates heading anchors, a table of contents, estimated
 reading time, article metadata, RSS entries and sitemap URLs. Articles are
 sorted newest first, with filename ordering for ties. The homepage shows
 the latest three. RSS contains article summaries and links to full posts.
+
+## Refresh the two new experiments
+
+The code and generated experiment results live in the supplied project
+clones, outside the website repository:
+
+| Article source | Project repository | Website result snapshots |
+| --- | --- | --- |
+| `content/posts/training-serving-skew.md` | `../EFS/` | `assets/training-serving-skew/` |
+| `content/posts/author-level-splitting.md` | `../author-profiling-pan-clef-2018/` | `assets/author-level-splitting/` |
+
+Follow the experiment instructions in each project's README. After a
+rerun, check the article's measured table and interpretation against the
+new results, then copy `comparison.png`, `metrics.csv` and
+`run_metadata.json` from that experiment's results directory into its
+website snapshot directory. Copy generated results from their source;
+do not edit result CSVs, charts or provenance directly.
+
+Keep the declared settings and all reported seeds visible. If settings or
+results change, update the article's explanation as well as the figures.
+Regenerate this site and run the checks before publication. The article
+sources are editorial documents; the publisher does not execute the
+experiments or refresh their measured tables automatically.
 
 ## Weekly rhythm
 

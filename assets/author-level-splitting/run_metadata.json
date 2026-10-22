@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "data_kind": "entirely synthetic fictional styles A/B",
+  "config": {
+    "author_count": 80,
+    "posts_per_author_count": 20,
+    "seed": 2018,
+    "test_fraction": 0.25,
+    "weak_cue_probability": 0.65,
+    "identity_repeat_count": 4,
+    "logistic_c": 1.0,
+    "max_iter": 200
+  },
+  "python_version": "3.11.7",
+  "packages": {
+    "matplotlib": "3.10.6",
+    "numpy": "2.0.0",
+    "pandas": "2.2.2",
+    "pydantic": "2.13.4",
+    "pytest": "8.3.4",
+    "scikit-learn": "1.7.2"
+  },
+  "data_sha256": "debb7cb746d0020d0298421725d1ffeab721c931367197d682fe1dc1c8744844",
+  "source_hash_encoding": "UTF-8 text with LF line endings, without BOM",
+  "source_sha256": {
+    "English_test.py": "a220d2f14fc162601780b85ed4333f1c75eae82b58035b8dc552c3b4f4e23879",
+    "English_train.py": "5e6922c51eb5c646ac3fa1cc66f8ec4e25c53cf1ca6eeb0a81f4470cfc3b4a2f",
+    "Spanish_train.py": "143c0d640ba6b6d93dc06ccfe8ed794d9a3bec6b58a5add3a985a8f064f3d4d1",
+    "experiments/PROTOCOL.md": "6784173f1869b8df6b91f3ac0f35b8d5d7cc79029f8f28913b84d71c966e02b1",
+    "experiments/author_level_validation.py": "cc0c7ec5288d98a5283d2e37f3dd329754b2ebf29517bf9178a27206d417ac07",
+    "experiments/requirements-demo.txt": "84372b0e3cf2f1f3491ecf5c470f75551c84284070ffe3a85bf0029ee4e0e1fe",
+    "experiments/tests/test_author_level_validation.py": "e80ba7a2f5ffda92fa2dca1340010273f665d3bbac74188d3cc7849bd6c6af59",
+    "pytest.ini": "1148e9af8783710dd2a28cf91e7e562e81ff48244c6e5ad5e9b42a52bf9267f2"
+  },
+  "artifact_sha256": {
+    "RESULTS.md": "ce4ba536455d0f933094c19af5170be66a509b7c515b7ff11dfe62fdfc9c665f",
+    "author_predictions.csv": "3919408f1b1be8792a53cd6fb7fbfac2fc58b2dd131075741e6fe04e91c6365a",
+    "comparison.png": "10b97bf5b42e884c1a01e2977d0bbfb69b6205a4369f7bbff3f5ad3bf4cbc406",
+    "metrics.csv": "481f958652712d77d0c2449b0e9c991331cd58d0ad180ca87ec95efa8c947f2d",
+    "predictions.csv": "0d2af8f8e37571b592dbe26f5b0c1b328c28dc71d28a1aaef2da9a7f91733333",
+    "split_assignments.csv": "0ce21b76dddc9df6487ec8482e5f5aef4350ec8344bf799c47b13f026e4bbb7e",
+    "synthetic_posts.csv": "debb7cb746d0020d0298421725d1ffeab721c931367197d682fe1dc1c8744844"
+  },
+  "metrics": [
+    {
+      "condition": "row",
+      "train_post_count": 1200,
+      "test_post_count": 400,
+      "train_author_count": 80,
+      "test_author_count": 80,
+      "overlap_author_count": 80,
+      "test_a_post_count": 200,
+      "test_b_post_count": 200,
+      "post_accuracy": 1.0,
+      "post_macro_f1": 1.0,
+      "author_accuracy": 1.0,
+      "author_macro_f1": 1.0
+    },
+    {
+      "condition": "author_grouped",
+      "train_post_count": 1200,
+      "test_post_count": 400,
+      "train_author_count": 60,
+      "test_author_count": 20,
+      "overlap_author_count": 0,
+      "test_a_post_count": 200,
+      "test_b_post_count": 200,
+      "post_accuracy": 0.68,
+      "post_macro_f1": 0.6793506851374032,
+      "author_accuracy": 1.0,
+      "author_macro_f1": 1.0
+    },
+    {
+      "condition": "row_marker_ablation",
+      "train_post_count": 1200,
+      "test_post_count": 400,
+      "train_author_count": 80,
+      "test_author_count": 80,
+      "overlap_author_count": 80,
+      "test_a_post_count": 200,
+      "test_b_post_count": 200,
+      "post_accuracy": 0.6825,
+      "post_macro_f1": 0.6824980156125975,
+      "author_accuracy": 0.7625,
+      "author_macro_f1": 0.762462884825754
+    }
+  ],
+  "model": "TF-IDF unigram + LogisticRegression(liblinear), train-only fit",
+  "author_aggregation": "mean probability B over heldout posts; >=0.5 predicts B"
+}
